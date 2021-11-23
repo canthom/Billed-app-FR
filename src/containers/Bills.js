@@ -41,7 +41,7 @@ export default class {
             try {
               return {
                 ...doc.data(),
-                date: formatDate(doc.data().date),
+                // date: formatDate(doc.data().date),
                 status: formatStatus(doc.data().status)
               }
             } catch(e) {
@@ -50,13 +50,13 @@ export default class {
               console.log(e,'for',doc.data())
               return {
                 ...doc.data(),
-                date: doc.data().date,
+                // date: doc.data().date,
                 status: formatStatus(doc.data().status)
               }
             }
           })
           .filter(bill => bill.email === userEmail)
-          console.log('length', bills.length)
+          // console.log('length', bills.length)
         return bills
       })
       .catch(error => error)

@@ -163,6 +163,7 @@ describe("Given that I am a user on login page", () => {
       }
 
       const inputEmailUser = screen.getByTestId("admin-email-input")
+      // console.log("test inputMail :", inputEmailUser)
       fireEvent.change(inputEmailUser, { target: { value: inputData.email } })
       expect(inputEmailUser.value).toBe(inputData.email)
           

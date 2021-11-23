@@ -146,11 +146,10 @@ export default class {
     }
 
     bills.forEach(bill => {
+      $(`#open-bill${bill.id}`).off('click')
       $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
     })
-
     return bills
-
   }
 
   // not need to cover this function by tests
@@ -167,6 +166,7 @@ export default class {
           date: doc.data().date,
           status: doc.data().status
         }))
+        console.log(bills)
         return bills
       })
       .catch(console.log)

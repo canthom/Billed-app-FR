@@ -21,10 +21,14 @@ export default class NewBill {
     const fileName = filePath[filePath.length-1]
     const errorMessage = document.querySelector('#errorMessage');
     const fileInput = document.querySelector('.col-half:last-of-type input');
-
+    
     if (fileName.toLowerCase().includes(".jpg") || fileName.toLowerCase().includes(".jpeg") || fileName.toLowerCase().includes(".png")) {
-      errorMessage.style.display = 'none';
+      if (errorMessage === 'contents') {
+        errorMessage.style.display = 'none';
+      }
+      
       if (this.firestore) {
+        
         this.firestore
         .storage
         .ref(`justificatifs/${fileName}`)
@@ -35,7 +39,6 @@ export default class NewBill {
           this.fileName = fileName
         })
       }
-      
     } else {
       errorMessage.style.display = 'contents';
       errorMessage.style.color = 'red';

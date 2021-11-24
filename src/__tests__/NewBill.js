@@ -1,13 +1,13 @@
 import { fireEvent, screen, waitFor } from "@testing-library/dom"
-import { localStorageMock } from "../__mocks__/localStorage.js"
-import { ROUTES, ROUTES_PATH } from "../constants/routes";
-import Router from "../app/Router";
-import Firestore from "../app/Firestore";
 import BillsUI from "../views/BillsUI.js"
 import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
 import userEvent from "@testing-library/user-event";
+import { ROUTES, ROUTES_PATH } from "../constants/routes";
+import { localStorageMock } from "../__mocks__/localStorage.js"
 import firebase from "../__mocks__/firebase.js";
+import Router from "../app/Router";
+import Firestore from "../app/Firestore";
 
 const onNavigate = ((pathname) => {
   document.body.innerHTML = ROUTES({ pathname })
@@ -53,53 +53,56 @@ describe("Given I am connected as an employee", () => {
       expect(Array.from(screen.getByTestId('icon-mail').classList).includes('active-icon')).toBe(true)
     })
   })
+
   describe("When I am on NewBill Page and I click on File button", () => {
     test("Then, if I enter a correct file, the file should be load correctly", () => {
       document.body.innerHTML = NewBillUI()
-      const firestore = null
-
       const newBill = new NewBill({
-        document, onNavigate, firestore, localStorage: window.localStorage
+        document, onNavigate, firestore: null, localStorage: window.localStorage
       })
-      const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e))
+      const handleChangeFile = jest.fn(() => newBill.handleChangeFile)
 
       const inputFile = screen.getByTestId('file');
-      inputFile.addEventListener('change', handleChangeFile);
-      fireEvent.change(inputFile, {
+      inputFile.addEventListener('input', handleChangeFile);
+      fireEvent.input(inputFile, {
         target: {
           files: [new File(["helloWorld.jpg"], "helloWorld.jpg", { type: "text/jpg"} )]
         }
       })
       
+      expect(inputFile.files[0]).toStrictEqual(new File(["helloWorld.jpg"], "helloWorld.jpg", { type: "text/jpg"} ))
+      expect(inputFile.files[0].name).toBe('helloWorld.jpg');
       expect(document.querySelector('#errorMessage').style.display).toBe('none')
       expect(handleChangeFile).toHaveBeenCalled();
+      expect(inputFile.files.length).toEqual(1)
     })
+
     test("Then, if I enter a wrong file, it should display an error message", () => {
       document.body.innerHTML = NewBillUI()
-      const firestore = null
-
       const newBill = new NewBill({
-        document, onNavigate, firestore, localStorage: window.localStorage
+        document, onNavigate, firestore: null, localStorage: window.localStorage
       })
       const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e))
 
       const inputFile = screen.getByTestId('file');
-      inputFile.addEventListener('change', handleChangeFile);
+      inputFile.addEventListener('input', handleChangeFile);
       fireEvent.change(inputFile, {
         target: {
           files: [new File(["helloWorld.gif"], "helloWorld.gif", { type: "text/gif"} )]
         }
       })
       
+      expect(inputFile.value).toBe('')
+      expect(inputFile.files).toHaveLength(1);
       expect(document.querySelector('#errorMessage').style.display).toBe('contents')
     })
   })
+
   describe("When I am on NewBill Page and I click on the Submit Button", () => {
     test("Then it should create a correct new bill", () => {
       document.body.innerHTML = NewBillUI()
-      const firestore = null
       const newBill = new NewBill({
-        document, onNavigate, firestore, localStorage: window.localStorage
+        document, onNavigate, firestore: null, localStorage: window.localStorage
       })
 
       const form = screen.getByTestId('form-new-bill');
@@ -115,7 +118,6 @@ describe("Given I am connected as an employee", () => {
       }
 
       const handleSubmit = jest.fn(newBill.handleSubmit)
-      // const handleSubmit = jest.fn(() => newBill.handleSubmit)
       
       newBill.createBill = (newBill) => newBill 
       document.querySelector('select[data-testid="expense-type"]').value = billExample.type;
@@ -134,9 +136,6 @@ describe("Given I am connected as an employee", () => {
     })
   })
 })
-
-
-
 
 // Test d'Intégration POST
 describe("Given I am user connected as Employee", () => {
@@ -163,24 +162,6 @@ describe("Given I am user connected as Employee", () => {
 
       expect(getSpy).toHaveBeenCalledTimes(1)
       expect(bills.data.length).toBe(1)
-    })
-
-    test("Fetches bills from an API and fails with 404 message error", async () => {
-      firebase.post.mockImplementationOnce(() =>
-        Promise.reject(new Error("Erreur 404"))
-      )
-      document.body.innerHTML = BillsUI({ loading: false, error: "Erreur 404" })
-      const message = await screen.getByText(/Erreur 404/)
-      expect(message).toBeTruthy()
-    })
-
-    test("Fetches messages from an API and fails with 500 message error", async () => {
-      firebase.post.mockImplementationOnce(() =>
-        Promise.reject(new Error("Erreur 500"))
-      )
-      document.body.innerHTML = BillsUI({ loading: false, error: "Erreur 500" })
-      const message = await screen.getByText(/Erreur 500/)
-      expect(message).toBeTruthy()
     })
   })
 })

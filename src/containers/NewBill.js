@@ -23,12 +23,11 @@ export default class NewBill {
     const fileInput = document.querySelector('.col-half:last-of-type input');
     
     if (fileName.toLowerCase().includes(".jpg") || fileName.toLowerCase().includes(".jpeg") || fileName.toLowerCase().includes(".png")) {
-      if (errorMessage === 'contents') {
+      if (errorMessage.style.display === 'contents') {
         errorMessage.style.display = 'none';
       }
-      
+
       if (this.firestore) {
-        
         this.firestore
         .storage
         .ref(`justificatifs/${fileName}`)

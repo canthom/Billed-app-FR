@@ -60,7 +60,7 @@ describe("Given I am connected as an employee", () => {
       const newBill = new NewBill({
         document, onNavigate, firestore: null, localStorage: window.localStorage
       })
-      const handleChangeFile = jest.fn(() => newBill.handleChangeFile)
+      const handleChangeFile = jest.fn((e) => newBill.handleChangeFile)
 
       const inputFile = screen.getByTestId('file');
       inputFile.addEventListener('input', handleChangeFile);
@@ -82,7 +82,7 @@ describe("Given I am connected as an employee", () => {
       const newBill = new NewBill({
         document, onNavigate, firestore: null, localStorage: window.localStorage
       })
-      const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e))
+      const handleChangeFile = jest.fn((e) => newBill.handleChangeFile)
 
       const inputFile = screen.getByTestId('file');
       inputFile.addEventListener('input', handleChangeFile);
@@ -92,6 +92,8 @@ describe("Given I am connected as an employee", () => {
         }
       })
       
+      expect(handleChangeFile).toBeCalled();
+      expect(inputFile.files[0]).toStrictEqual(new File(["helloWorld.gif"], "helloWorld.gif", { type: "text/gif"} ))
       expect(inputFile.value).toBe('')
       expect(inputFile.files).toHaveLength(1);
       expect(document.querySelector('#errorMessage').style.display).toBe('contents')
@@ -141,7 +143,7 @@ describe("Given I am connected as an employee", () => {
 describe("Given I am user connected as Employee", () => {
   describe('When I create a new bill', () => {
     test("Add bill to mock API", async () => {
-      const getSpy = jest.spyOn(firebase, "post")
+      const postSpy = jest.spyOn(firebase, "post")
 
       const newBill = {
         "id": "BeKy5Mo4jkmdfPGYpTxZ",
@@ -160,7 +162,7 @@ describe("Given I am user connected as Employee", () => {
       }
       const bills = await firebase.post(newBill)
 
-      expect(getSpy).toHaveBeenCalledTimes(1)
+      expect(postSpy).toHaveBeenCalledTimes(1)
       expect(bills.data.length).toBe(1)
     })
   })

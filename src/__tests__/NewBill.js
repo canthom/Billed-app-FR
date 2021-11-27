@@ -56,15 +56,21 @@ describe("Given I am connected as an employee", () => {
 
   describe("When I am on NewBill Page and I click on File button", () => {
     test("Then, if I enter a correct file, the file should be load correctly", () => {
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      const user = JSON.stringify({
+        type: 'Employee'
+      })
+      window.localStorage.setItem('user', user)
+
       document.body.innerHTML = NewBillUI()
       const newBill = new NewBill({
         document, onNavigate, firestore: null, localStorage: window.localStorage
       })
-      const handleChangeFile = jest.fn((e) => newBill.handleChangeFile)
+      const handleChangeFile = jest.fn(newBill.handleChangeFile)
 
       const inputFile = screen.getByTestId('file');
-      inputFile.addEventListener('input', handleChangeFile);
-      fireEvent.input(inputFile, {
+      inputFile.addEventListener('change', handleChangeFile);
+      fireEvent.change(inputFile, {
         target: {
           files: [new File(["helloWorld.jpg"], "helloWorld.jpg", { type: "text/jpg"} )]
         }
@@ -72,31 +78,36 @@ describe("Given I am connected as an employee", () => {
       
       expect(inputFile.files[0]).toStrictEqual(new File(["helloWorld.jpg"], "helloWorld.jpg", { type: "text/jpg"} ))
       expect(inputFile.files[0].name).toBe('helloWorld.jpg');
-      expect(document.querySelector('#errorMessage').style.display).toBe('none')
+      expect(screen.getByTestId('file-error-message').textContent).toBe('');
       expect(handleChangeFile).toHaveBeenCalled();
       expect(inputFile.files.length).toEqual(1)
     })
 
     test("Then, if I enter a wrong file, it should display an error message", () => {
+      Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+      const user = JSON.stringify({
+        type: 'Employee'
+      })
+      window.localStorage.setItem('user', user)
+
       document.body.innerHTML = NewBillUI()
       const newBill = new NewBill({
         document, onNavigate, firestore: null, localStorage: window.localStorage
       })
-      const handleChangeFile = jest.fn((e) => newBill.handleChangeFile)
+      const handleChangeFile = jest.fn(newBill.handleChangeFile)
 
       const inputFile = screen.getByTestId('file');
-      inputFile.addEventListener('input', handleChangeFile);
+      inputFile.addEventListener('change', handleChangeFile);
       fireEvent.change(inputFile, {
         target: {
           files: [new File(["helloWorld.gif"], "helloWorld.gif", { type: "text/gif"} )]
         }
       })
       
-      expect(handleChangeFile).toBeCalled();
+      expect(handleChangeFile).toHaveBeenCalled();
       expect(inputFile.files[0]).toStrictEqual(new File(["helloWorld.gif"], "helloWorld.gif", { type: "text/gif"} ))
       expect(inputFile.value).toBe('')
-      expect(inputFile.files).toHaveLength(1);
-      expect(document.querySelector('#errorMessage').style.display).toBe('contents')
+      expect(screen.getByTestId('file-error-message').textContent).toBe('Le justificatif doit être un fichier .jpg, .jpeg ou .png.');
     })
   })
 

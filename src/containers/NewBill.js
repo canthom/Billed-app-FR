@@ -20,12 +20,12 @@ export default class NewBill {
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
     const errorMessage = document.querySelector('#errorMessage');
-    const fileInput = document.querySelector('.col-half:last-of-type input');
+    const fileInput = e.target;
+    // const fileInput = document.querySelector('.col-half:last-of-type input');
+    const extension = fileName.toLowerCase().includes(".jpg") || fileName.toLowerCase().includes(".jpeg") || fileName.toLowerCase().includes(".png");
     
-    if (fileName.toLowerCase().includes(".jpg") || fileName.toLowerCase().includes(".jpeg") || fileName.toLowerCase().includes(".png")) {
-      if (errorMessage.style.display === 'contents') {
-        errorMessage.style.display = 'none';
-      }
+    if (extension) {
+      errorMessage.innerHTML = '';
 
       if (this.firestore) {
         this.firestore
@@ -38,10 +38,9 @@ export default class NewBill {
           this.fileName = fileName
         })
       }
-    } else {
-      errorMessage.style.display = 'contents';
-      errorMessage.style.color = 'red';
-      errorMessage.style.fontWeight = 'bold';
+
+    } else if (!extension) {
+      errorMessage.innerHTML = 'Le justificatif doit être un fichier .jpg, .jpeg ou .png.';
       fileInput.value = '';
     }
   }

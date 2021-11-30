@@ -7,7 +7,7 @@ import { ROUTES, ROUTES_PATH } from "../constants/routes";
 import { localStorageMock } from "../__mocks__/localStorage.js"
 import firebase from "../__mocks__/firebase.js";
 import Router from "../app/Router";
-import Firestore from "../app/Firestore";
+import Firestore from "../app/Firestore.js";
 
 const onNavigate = ((pathname) => {
   document.body.innerHTML = ROUTES({ pathname })
@@ -67,20 +67,24 @@ describe("Given I am connected as an employee", () => {
         document, onNavigate, firestore: null, localStorage: window.localStorage
       })
       const handleChangeFile = jest.fn(newBill.handleChangeFile)
+      // const handleChangeFile = jest.fn()
 
       const inputFile = screen.getByTestId('file');
       inputFile.addEventListener('change', handleChangeFile);
       fireEvent.change(inputFile, {
+        // target: {
+        //   files: [new File(["helloworld.jpg"], "helloworld.jpg", { type: "image/jpeg" })],
+        // },
         target: {
-          files: [new File(["helloWorld.jpg"], "helloWorld.jpg", { type: "text/jpg"} )]
+          files: [new File(["test.jpg"], "test.jpg", { type: "image/jpeg" })],
         }
       })
       
-      expect(inputFile.files[0]).toStrictEqual(new File(["helloWorld.jpg"], "helloWorld.jpg", { type: "text/jpg"} ))
-      expect(inputFile.files[0].name).toBe('helloWorld.jpg');
+      // expect(inputFile.files[0]).toStrictEqual(new File(["helloworld.jpg"], "helloworld.jpg", { type: "image/jpeg"} ))
+      expect(inputFile.files[0].name).toBe('test.jpg');
       expect(screen.getByTestId('file-error-message').textContent).toBe('');
       expect(handleChangeFile).toHaveBeenCalled();
-      expect(inputFile.files.length).toEqual(1)
+      expect(inputFile.files.length).toEqual(1);
     })
 
     test("Then, if I enter a wrong file, it should display an error message", () => {
@@ -100,12 +104,12 @@ describe("Given I am connected as an employee", () => {
       inputFile.addEventListener('change', handleChangeFile);
       fireEvent.change(inputFile, {
         target: {
-          files: [new File(["helloWorld.gif"], "helloWorld.gif", { type: "text/gif"} )]
+          files: [new File(["helloWorld.txt"], "helloWorld.txt", { type: "text/txt"} )]
         }
       })
       
       expect(handleChangeFile).toHaveBeenCalled();
-      expect(inputFile.files[0]).toStrictEqual(new File(["helloWorld.gif"], "helloWorld.gif", { type: "text/gif"} ))
+      // expect(inputFile.files[0]).toStrictEqual(new File(["helloWorld.gif"], "helloWorld.gif", { type: "text/gif"} ))
       expect(inputFile.value).toBe('')
       expect(screen.getByTestId('file-error-message').textContent).toBe('Le justificatif doit être un fichier .jpg, .jpeg ou .png.');
     })

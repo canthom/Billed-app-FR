@@ -16,13 +16,10 @@ export default class NewBill {
     new Logout({ document, localStorage, onNavigate })
   }
   handleChangeFile = e => {
-    const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
-    const filePath = e.target.value.split(/\\/g)
-    const fileName = filePath[filePath.length-1]
-    console.log(fileName)
+    const file = this.document.querySelector(`input[data-testid="file"]`).files[0];
+    const fileName = file.name;
     const errorMessage = document.querySelector('#errorMessage');
-    const fileInput = e.target;
-    // const fileInput = document.querySelector('.col-half:last-of-type input');
+    const fileInput = this.document.querySelector(`input[data-testid="file"]`);
     const extension = fileName.toLowerCase().includes(".jpg") || fileName.toLowerCase().includes(".jpeg") || fileName.toLowerCase().includes(".png");
     if (extension) {
       errorMessage.innerHTML = '';
@@ -67,6 +64,7 @@ export default class NewBill {
 
   // not need to cover this function by tests
   createBill = (bill) => {
+    /* istanbul ignore next */
     if (this.firestore) {
       this.firestore
       .bills()

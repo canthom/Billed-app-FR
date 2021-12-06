@@ -67,20 +67,15 @@ describe("Given I am connected as an employee", () => {
         document, onNavigate, firestore: null, localStorage: window.localStorage
       })
       const handleChangeFile = jest.fn(newBill.handleChangeFile)
-      // const handleChangeFile = jest.fn()
 
       const inputFile = screen.getByTestId('file');
       inputFile.addEventListener('change', handleChangeFile);
-      fireEvent.change(inputFile, {
-        // target: {
-        //   files: [new File(["helloworld.jpg"], "helloworld.jpg", { type: "image/jpeg" })],
-        // },
-        target: {
-          files: [new File(["test.jpg"], "test.jpg", { type: "image/jpeg" })],
-        }
-      })
+      const newFile = new File(["test.jpg"], "test.jpg", {
+        type: "image/jpeg",
+      });
+
+      userEvent.upload(inputFile, newFile);
       
-      // expect(inputFile.files[0]).toStrictEqual(new File(["helloworld.jpg"], "helloworld.jpg", { type: "image/jpeg"} ))
       expect(inputFile.files[0].name).toBe('test.jpg');
       expect(screen.getByTestId('file-error-message').textContent).toBe('');
       expect(handleChangeFile).toHaveBeenCalled();
@@ -109,7 +104,6 @@ describe("Given I am connected as an employee", () => {
       })
       
       expect(handleChangeFile).toHaveBeenCalled();
-      // expect(inputFile.files[0]).toStrictEqual(new File(["helloWorld.gif"], "helloWorld.gif", { type: "text/gif"} ))
       expect(inputFile.value).toBe('')
       expect(screen.getByTestId('file-error-message').textContent).toBe('Le justificatif doit être un fichier .jpg, .jpeg ou .png.');
     })
